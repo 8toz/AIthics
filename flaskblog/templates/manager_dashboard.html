@@ -13,7 +13,11 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ plot.team }}</h5>
-                    <img src="data:image/png;base64,{{ plot.plot }}" class="img-fluid" alt="{{ plot.team }} Performance Distribution">
+                    <div id="plot_{{ loop.index }}" class="plot-div"></div>
+                    <script>
+                        var plot_data = {{ plot.plot | safe }};
+                        Plotly.newPlot('plot_{{ loop.index }}', plot_data);
+                    </script>
                 </div>
             </div>
         </div>
@@ -23,7 +27,7 @@
     <div class="row">
         <div class="col-md-12">
             <section class="mb-5">
-                <h2 class="mb-3">Team Overview</h2>
+                <h2>Team Overview</h2>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead class="thead-dark">
@@ -31,13 +35,10 @@
                                 <th>Employee ID</th>
                                 <th>Department</th>
                                 <th>Region</th>
-                                <th>Education</th>
-                                <th>Gender</th>
-                                <th>Age</th>
                                 <th>Previous Year Rating</th>
                                 <th>Length of Service</th>
                                 <th>No. of Trainings</th>
-                                <th>KPIs Met >80%</th>
+                                <th>KPIs with >80%</th>
                                 <th>Awards Won</th>
                                 <th>Avg Training Score</th>
                                 <th>Performance Score</th>
@@ -46,20 +47,18 @@
                         </thead>
                         <tbody>
                             {% for employee in employees %}
-                                <tr>
-                                    <td>{{ employee.employee_id }}</td>
-                                    <td>{{ employee.department }}</td>
-                                    <td>{{ employee.region }}</td>
-                                    <td>{{ employee.education }}</td>
-                                    <td>{{ employee.gender }}</td>
-                                    <td>{{ employee.age }}</td>
-                                    <td>{{ employee.previous_year_rating }}</td>
-                                    <td>{{ employee.length_of_service }}</td>
-                                    <td>{{ employee.no_of_trainings }}</td>
-                                    <td>{{ employee.KPIs_met_more_than_80 }}</td>
-                                    <td>{{ employee.awards_won }}</td>
-                                    <td>{{ employee.avg_training_score }}</td>
-                                    <td>
+                            <tr>
+                                <td>{{ employee.employee_id }}</td>
+                                <td>{{ employee.department }}</td>
+                                <td>{{ employee.region }}</td>
+                                <td>{{ employee.previous_year_rating }}</td>
+                                <td>{{ employee.length_of_service }}</td>
+                                <td>{{ employee.no_of_trainings }}</td>
+                                <td>{{ employee.KPIs_met_more_than_80 }}</td>
+                                <td>{{ employee.awards_won }}</td>
+                                <td>{{ employee.avg_training_score }}</td>
+                                <td>
+                                    {% if employee.performance_score is not none %}
                                         <span class="badge
                                             {% if employee.performance_score >= 75 %}
                                                 badge-success
@@ -70,11 +69,14 @@
                                             {% endif %}">
                                             {{ employee.performance_score }}
                                         </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" onclick="generateNudge('{{ employee.employee_id }}')">Generate Nudge</button>
-                                    </td>
-                                </tr>
+                                    {% else %}
+                                        <span class="badge badge-secondary">No score</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="get_insights('{{ employee.employee_id }}')">See insights</button>
+                                </td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -84,21 +86,21 @@
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         {% if page > 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('manager_dashboard', page=page-1) }}">&laquo; Previous</a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('manager_dashboard', page=page-1) }}">&laquo; Previous</a>
+                        </li>
                         {% endif %}
 
                         {% for p in page_range %}
-                            <li class="page-item {% if p == page %}active{% endif %}">
-                                <a class="page-link" href="{{ url_for('manager_dashboard', page=p) }}">{{ p }}</a>
-                            </li>
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('manager_dashboard', page=p) }}">{{ p }}</a>
+                        </li>
                         {% endfor %}
 
                         {% if page < total_pages %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('manager_dashboard', page=page+1) }}">Next &raquo;</a>
-                            </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('manager_dashboard', page=page+1) }}">Next &raquo;</a>
+                        </li>
                         {% endif %}
                     </ul>
                 </nav>
@@ -108,27 +110,16 @@
         <!-- Recent Updates section remains the same -->
     </div>
 </div>
-{% endblock content %}
+{% endblock %}
 
 {% block scripts %}
 <script>
-function generateNudge(employeeId) {
-    fetch('{{ url_for("generate_nudge") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({employee: employeeId}),
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);  // You can replace this with a more sophisticated notification
-        fetchNotifications();  // Refresh the notifications in the header
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while generating the nudge.');
-    });
+function get_insights(employeeId) {
+    if (!employeeId || isNaN(parseInt(employeeId))) {
+        alert('Please select a valid employee to see insights.');
+        return;
+    }
+    window.location.href = '{{ url_for("get_insights", employee_id=0) }}' + employeeId;
 }
 </script>
 {% endblock scripts %}

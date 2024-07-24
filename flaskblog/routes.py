@@ -1,94 +1,106 @@
-from flask import render_template, url_for, flash, redirect, request, jsonify
+from flask import Flask, render_template, url_for, flash, redirect, request, jsonify, g
+import sqlite3
 from flaskblog import app
 from flaskblog.forms import RegistrationForm, LoginForm
 from flaskblog.models import User, Post
 from datetime import datetime
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import io
 import base64
 from math import ceil
 
-
 # This would ideally be stored in a database. For this example, we'll use a global variable.
 notifications = []
 
-# Read the CSV file
-df = pd.read_csv('Data/Uncleaned_employees_final_dataset (1).csv')
-def calculate_performance_score(row):
-    if row['no_of_trainings'] > 2 and row['previous_year_rating'] > 3:
-        return np.random.randint(75, 100)
-    else:
-        # Calculate a score based on trainings and rating
-        base_score = (row['no_of_trainings'] * 10) + (row['previous_year_rating'] * 10)
-        # Normalize to a 0-100 scale
-        return min(max(base_score, 0), 74)  # Cap at 74 to differentiate from high performers
+# Function to establish SQLite database connection
+def get_db_connection():
+    conn = sqlite3.connect('flaskblog.db')
+    conn.row_factory = sqlite3.Row  # Access rows as dictionaries
+    return conn
 
-# Add performance score to the dataframe
-df['performance_score'] = df.apply(calculate_performance_score, axis=1)
-df = df[:15]
+# Close database connection when context is popped
+@app.teardown_appcontext
+def close_connection(exception=None):
+    conn = getattr(g, '_database', None)
+    if conn is not None:
+        conn.close()
+
+# Function to generate team plots using Plotly
+def generate_team_plots():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch top 3 departments based on performance score
+    cursor.execute('SELECT department, AVG(performance_score) AS avg_performance FROM employees GROUP BY department ORDER BY avg_performance DESC LIMIT 3')
+    top_3_departments = cursor.fetchall()
+
+    plots = []
+    for dept, avg_performance in top_3_departments:
+        # Fetch team data for the department
+        cursor.execute('SELECT performance_score FROM employees WHERE department=?', (dept,))
+        print(cursor.fetchall())
+        team_data = cursor.fetchall()
+
+        # Check if team_data is empty or None
+        if team_data:
+            # Extract performance scores
+            performance_scores = [data['performance_score'] for data in team_data if data['performance_score'] is not None]
+
+            if performance_scores:
+                # Create a Plotly histogram figure
+                fig = go.Figure(data=[go.Histogram(x=performance_scores, nbinsx=10)])
+                fig.update_layout(
+                    title=f'{dept} Team Performance Distribution',
+                    xaxis_title='Performance Score',
+                    yaxis_title='Number of Employees'
+                )
+
+                # Convert Plotly figure to JSON to embed in HTML
+                plot_json = fig.to_json()
+
+                plots.append({
+                    'team': dept,
+                    'plot': plot_json
+                })
+        else:
+            app.logger.warning(f"No performance scores found for department: {dept}")
+
+    cursor.close()
+    conn.close()
+
+    return plots
 
 @app.route("/")
 @app.route("/home")
 def home():
     return render_template('home.html')
 
-
-def generate_team_plots():
-    # For this example, we'll consider 'department' as teams
-    top_3_departments = df['department'].value_counts().nlargest(3).index
-
-    plots = []
-    for dept in top_3_departments:
-        team_data = df[df['department'] == dept]
-
-        # Generate plot
-        plt.figure(figsize=(8, 6))
-        plt.hist(team_data['performance_score'], bins=10, edgecolor='black')
-        plt.title(f'{dept} Team Performance Distribution')
-        plt.xlabel('Performance Score')
-        plt.ylabel('Number of Employees')
-
-        # Save plot to a base64 string
-        buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
-        buffer.seek(0)
-        plot_data = base64.b64encode(buffer.getvalue()).decode()
-        plt.close()
-
-        plots.append({
-            'team': dept,
-            'plot': plot_data
-        })
-
-    return plots
-
-
 @app.route('/manager_dashboard')
 def manager_dashboard():
     page = request.args.get('page', 1, type=int)
     per_page = 5  # Number of employees per page
 
-    # Calculate the start and end indices for the current page
     start = (page - 1) * per_page
     end = start + per_page
 
-    # Get the total number of employees
-    total_employees = len(df)
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-    # Calculate the total number of pages
+    # Fetch employees from SQLite database
+    cursor.execute('SELECT * FROM employees')
+    employees = cursor.fetchall()
+
+    total_employees = len(employees)
     total_pages = ceil(total_employees / per_page)
 
-    # Calculate the range of pages to display
     page_range_start = max(1, page - 2)
     page_range_end = min(total_pages, page + 2)
     page_range = list(range(page_range_start, page_range_end + 1))
 
-    # Get the employees for the current page
-    employees = df.iloc[start:end].to_dict('records')
+    employees = employees[start:end]  # Limit to current page
 
-    # Generate team performance plots
     team_plots = generate_team_plots()
 
     recent_updates = [
@@ -96,6 +108,10 @@ def manager_dashboard():
          'content': 'Project X milestone achieved!'},
         # Add more updates...
     ]
+
+    cursor.close()
+    conn.close()
+
     return render_template('manager_dashboard.html',
                            title='Manager Dashboard',
                            employees=employees,
@@ -125,11 +141,9 @@ def employee_dashboard():
     ]
     return render_template('employee_dashboard.html', title='Employee Dashboard', employee=employee, recent_updates=recent_updates, upcoming_tasks=upcoming_tasks)
 
-
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
-
 
 @app.route("/logout")
 def logout():
@@ -147,7 +161,6 @@ def tasks():
 def performance():
     return render_template('performance.html', title='Performance')
 
-
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -155,27 +168,51 @@ def register():
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
+def generate_employee_plots(employee_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
+    # Fetch employee data
+    cursor.execute('SELECT * FROM employees WHERE id=?', (employee_id,))
+    employee_data = cursor.fetchone()
 
-@app.route('/generate_nudge', methods=['POST'])
-def generate_nudge():
-    data = request.json
-    employee = data.get('employee')
-    message = f"Nudge generated for {employee}: Great job on your recent project! Keep up the good work!"
+    if not employee_data:
+        flash(f'Employee with ID {employee_id} not found', 'danger')
+        return None
 
-    # Add the new notification
-    notifications.append({
-        'message': message,
-        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    })
+    # Fetch performance scores
+    performance_scores = [employee_data['performance_score']]
 
-    return jsonify({'message': message})
+    # Create a Plotly bar chart figure
+    fig = go.Figure(data=[go.Bar(x=['Performance Score'], y=performance_scores)])
+    fig.update_layout(
+        title=f'Performance Scores for Employee ID: {employee_id}',
+        xaxis_title='Performance Score',
+        yaxis_title='Score Value'
+    )
 
+    # Convert Plotly figure to JSON to embed in HTML
+    plot_json = fig.to_json()
+
+    cursor.close()
+    conn.close()
+
+    return plot_json
+@app.route('/get_insights/<int:employee_id>')
+def get_insights(employee_id):
+    # Generate plots for the employee
+    employee_plots = generate_employee_plots(employee_id)
+
+    if not employee_plots:
+        # Handle case where employee data or plots couldn't be generated
+        flash(f'Unable to generate insights for Employee ID {employee_id}', 'danger')
+        return redirect(url_for('manager_dashboard'))
+
+    return render_template('insights.html', title='Employee Insights', employee_id=employee_id, employee_plots=employee_plots)
 
 @app.route('/get_notifications')
 def get_notifications():
     return jsonify(notifications)
-
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():

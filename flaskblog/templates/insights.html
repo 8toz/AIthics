@@ -1,0 +1,31 @@
+<!-- insights.html -->
+
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">Employee Insights - Employee ID: {{ employee_id }}</h1>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Performance Overview</h2>
+        </div>
+        <div class="col-md-12">
+            <div id="employee_plots" class="plot-div"></div>
+            <script>
+                var plot_data = {{ employee_plots | safe }};
+                Plotly.newPlot('employee_plots', plot_data);
+            </script>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <section class="mb-5">
+                <!-- Add any additional insights or data here -->
+                <a class="btn btn-secondary" href="{{ url_for('manager_dashboard') }}">Back to Manager Dashboard</a>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
