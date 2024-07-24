@@ -26,6 +26,10 @@ def manager_dashboard():
 def about():
     return render_template('about.html', title='About')
 
+@app.route("/logout")
+def logout():
+    return render_template('logout.html', title='Logout')
+
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
