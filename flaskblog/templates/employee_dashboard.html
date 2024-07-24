@@ -23,13 +23,67 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar content (unchanged) -->
         <nav class="col-md-2 d-md-block bg-light sidebar">
-            <!-- ... (sidebar content remains the same) ... -->
+            <div class="sidebar-sticky">
+                <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Dashboard</span>
+                </h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('home') }}">
+                            My dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            Me
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            My team
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            As reviewer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            Feedback
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            Support
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </nav>
 
         <main role="main" class="col-md-10 ml-sm-auto px-4">
-            <!-- ... (previous main content remains the same) ... -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">My dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Cycle: ALL
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">ALL</a>
+                            <a class="dropdown-item" href="#">Current Cycle</a>
+                            <a class="dropdown-item" href="#">Previous Cycle</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">H2 FY24 evaluation is launched for JL7, Title holders and GM roles</h4>
+                <p>H2 FY24 evaluation cycle has been launched, Last day for Employee Self-Evaluation closure is 10-May-2024, Appraiser Evaluation closure is 22-May-2024, and Reviewer Evaluation closure is 4-Jun-2024. Click here to visit enablement portal for any guidance.</p>
+            </div> -->
 
             <!-- Demo Buttons for Modal -->
             <div class="mb-3">
@@ -47,7 +101,62 @@
                 </button>
             </div>
 
-            <!-- ... (rest of the main content remains the same) ... -->
+            <section class="mb-5">
+                <h2 class="mb-3">My goal setting</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">Your goal setting process is not yet started. It will begin on 15-May-2024.</p>
+                        <a href="#" class="btn btn-primary">View Previous Goals</a>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="mb-5">
+                <h2 class="mb-3">Task progress overview</h2>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">1</h5>
+                                <p class="card-text">SR. MANAGEMENT<br>Goal setting pending with you</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">9</h5>
+                                <p class="card-text">JL5 & BELOW<br>Self-evaluation with employee (Where you are reviewer)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add more cards for other task categories as needed -->
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="mb-3">My evaluation</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Appraiser</h5>
+                        <div class="media">
+                            <img src="{{ url_for('static', filename='images/appraiser_avatar.jpg') }}" class="mr-3 rounded-circle" alt="Appraiser" style="width: 50px; height: 50px;">
+                            <div class="media-body">
+                                <h6 class="mt-0">Pranab Bhardwaj</h6>
+                            </div>
+                        </div>
+                        <h5 class="card-title mt-3">Reviewer</h5>
+                        <div class="media">
+                            <img src="{{ url_for('static', filename='images/reviewer_avatar.jpg') }}" class="mr-3 rounded-circle" alt="Reviewer" style="width: 50px; height: 50px;">
+                            <div class="media-body">
+                                <h6 class="mt-0">Vinayak A. Hegde</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
         </main>
     </div>
 </div>
