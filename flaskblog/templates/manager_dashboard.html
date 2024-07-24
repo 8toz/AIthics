@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block header_content %}
+<span class="navbar-brand mr-4">Welcome, Manager</span>
+<div class="navbar-nav ml-auto">
+    <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock header_content %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('home') }}">
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            Me
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">
+                            My Team
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">
+                            As Reviewer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">
+                            As AA
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <h1 class="mt-4 mb-4">Manager Dashboard</h1>
+            
+            <section class="mb-5">
+                <h2 class="mb-3">Team Overview</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                                <tr>
+                                    <td>{{ employee.name }}</td>
+                                    <td>{{ employee.position }}</td>
+                                    <td>{{ employee.department }}</td>
+                                    <td>
+                                        <span class="badge
+                                            {% if employee.status == 'Active' %}
+                                                badge-success
+                                            {% elif employee.status == 'On Leave' %}
+                                                badge-warning
+                                            {% else %}
+                                                badge-secondary
+                                            {% endif %}
+                                        ">
+                                            {{ employee.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="mb-3">Recent Updates</h2>
+                {% for update in recent_updates %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="media mb-3">
+                                <img src="{{ update.author_avatar }}" class="mr-3 rounded-circle" alt="{{ update.author }}" style="width: 50px; height: 50px;">
+                                <div class="media-body">
+                                    <h5 class="mt-0">{{ update.author }}</h5>
+                                    <small class="text-muted">{{ update.date_posted }}</small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ update.content }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+        </main>
+    </div>
+</div>
+{% endblock content %}

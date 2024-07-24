@@ -1,15 +1,72 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for post in posts %}
-        <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.author }}</a>
-              <small class="text-muted">{{ post.date_posted }}</small>
-            </div>
-            <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
-          </div>
-        </article>
-    {% endfor %}
+    <h1 class="mb-4">Welcome to AICount App</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <section class="mb-5">
+                <h2 class="mb-3">Latest News</h2>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">New AI Model Achieves Breakthrough in Natural Language Processing</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">July 24, 2024</h6>
+                        <p class="card-text">Researchers at AICount have developed a revolutionary AI model that significantly improves natural language understanding and generation. This breakthrough is expected to enhance various applications, from chatbots to automated content creation.</p>
+                        <a href="#" class="card-link">Read More</a>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">AICount App Reaches 1 Million User Milestone</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">July 22, 2024</h6>
+                        <p class="card-text">We're thrilled to announce that AICount App has surpassed 1 million active users! This achievement underscores the growing importance of AI-powered tools in various industries. We thank our users for their continued support and feedback.</p>
+                        <a href="#" class="card-link">Read More</a>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Upcoming Webinar: Leveraging AI for Business Growth</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">July 20, 2024</h6>
+                        <p class="card-text">Join us for an insightful webinar on how businesses can harness the power of AI to drive growth and innovation. Our panel of experts will discuss real-world applications and answer your questions live.</p>
+                        <a href="#" class="card-link">Register Now</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="col-md-4">
+            <section class="mb-5">
+                <h2 class="mb-3">Quick Stats</h2>
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Active Users
+                            <span class="badge badge-primary badge-pill">1,000,000+</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            AI Models
+                            <span class="badge badge-primary badge-pill">50+</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Industries Served
+                            <span class="badge badge-primary badge-pill">20+</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-3">Featured Update</h2>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">New Feature: AI-Powered Analytics Dashboard</h5>
+                        <p class="card-text">We've just rolled out our new AI-powered analytics dashboard. Get deeper insights into your data with advanced predictive analytics and visualization tools.</p>
+                        <a href="#" class="btn btn-primary">Try It Now</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 {% endblock content %}

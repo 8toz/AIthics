@@ -3,27 +3,23 @@ from flaskblog import app
 from flaskblog.forms import RegistrationForm, LoginForm
 from flaskblog.models import User, Post
 
-
-posts = [
-    {
-        'author': 'Corey Schafer',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'April 20, 2018'
-    },
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'April 21, 2018'
-    }
-]
-
-
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', posts=posts)
+    return render_template('home.html')
+
+@app.route('/manager_dashboard')
+def manager_dashboard():
+    employees = [
+        {'name': 'John Doe', 'position': 'Developer', 'department': 'IT', 'status': 'Active'},
+        {'name': 'Jane Smith', 'position': 'Designer', 'department': 'Creative', 'status': 'On Leave'},
+        # Add more employees...
+    ]
+    recent_updates = [
+        {'author': 'Team Lead', 'author_avatar': 'sumit.jpeg', 'date_posted': '2024-07-24', 'content': 'Project X milestone achieved!'},
+        # Add more updates...
+    ]
+    return render_template('manager_dashboard.html', title='Manager Dashboard', employees=employees, recent_updates=recent_updates)
 
 
 @app.route("/about")
@@ -44,9 +40,9 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-            flash('You have been logged in!', 'success')
-            return redirect(url_for('home'))
+        if form.email.data == 'manager@infosys.com' and form.password.data == '1234':
+            flash('Hi boss! How are you feeling today', 'success')
+            return redirect(url_for('manager_dashboard'))
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title='Login', form=form)
