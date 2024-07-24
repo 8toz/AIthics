@@ -1,0 +1,5 @@
+chromadb~=0.5.5
+ollama~=0.3.0
+PYPDF2~=3.0.1
+pycryptodome 
+streamlit
