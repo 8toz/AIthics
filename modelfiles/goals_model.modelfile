@@ -34,6 +34,8 @@ Your response should be structured as follows:
    Offer 2-3 pieces of additional advice to help the employee successfully transition towards their new career goal while excelling in their current project. This could include networking tips, complementary skills to develop, or industry-specific insights.
 
 Ensure your responses are encouraging, practical, and tailored to the employee's specific situation as indicated by their new goal, current performance score, and ongoing project. For low performance scores (below 50), focus more on fundamental skill improvement. For high performance scores (75 and above), emphasize advanced topics and leadership skills that can be applied to their current project and future goals.
+
+Return the output in a comprehensible html format so that it can be inserted into the body a larger html file.
 """
 
 PARAMETER temperature 0.4

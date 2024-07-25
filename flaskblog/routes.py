@@ -43,7 +43,7 @@ def get_employee_nudges(employee_id):
     return nudges
 
 
-def
+
 
 @app.route('/view_recommendation/<int:recommendation_id>', methods=['GET', 'POST'])
 def view_recommendation(recommendation_id):
@@ -224,7 +224,7 @@ def employee_dashboard():
         {"image": "https://via.placeholder.com/300x200?text=Slide+6", "title": "Slide 6",
          "description": "Description for Slide 6"},
     ]
-    employee_id = 74430
+    employee_id = 60245
     nudges = get_employee_nudges(employee_id)
     return render_template('employee_dashboard.html',
                            title='Employee Dashboard',
@@ -324,7 +324,7 @@ def plan_goals():
     if request.method == 'GET':
         conn = sqlite3.connect('flaskblog.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT project FROM projects WHERE employee_id = 74430')
+        cursor.execute('SELECT project FROM projects WHERE employee_id = 60245')
         projects_data = cursor.fetchall()
         projects = [(project[0], project[0]) for project in projects_data]
 
@@ -433,7 +433,7 @@ def login():
         global CURRENT_USER_ROLE
         if form.email.data == 'manager@infosys.com' and form.password.data == '1234':
             CURRENT_USER_ROLE = 'manager'
-            flash('Hi boss! How are you feeling today', 'success')
+            
             return redirect(url_for('manager_dashboard'))
         elif form.email.data == 'employee@infosys.com' and form.password.data == '1234':
             CURRENT_USER_ROLE = 'employee'
