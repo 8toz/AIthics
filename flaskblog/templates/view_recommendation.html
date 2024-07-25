@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Review Recommendation</h2>
+    <div class="card">
+        <div class="card-body">
+            {% if recommendation.status == 'Pending' and recommendation.id != recommendation.original_id %}
+                <div class="alert alert-warning">This is a regenerated recommendation.</div>
+            {% endif %}
+            <h5 class="card-title">New Goal: {{ recommendation.new_goal }}</h5>
+            <p class="card-text"><strong>Employee ID:</strong> {{ recommendation.employee_id }}</p>
+            <p class="card-text"><strong>Current Project:</strong> {{ recommendation.current_project }}</p>
+            <p class="card-text"><strong>Performance Score:</strong> {{ recommendation.current_performance_score }}</p>
+            <p class="card-text"><strong>Recommendation:</strong> {{ recommendation.recommendation }}</p>
+
+            <form action="{{ url_for('view_recommendation', recommendation_id=recommendation.id) }}" method="post">
+                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject and Regenerate</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

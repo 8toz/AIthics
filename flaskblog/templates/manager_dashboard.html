@@ -4,6 +4,38 @@
 <div class="container-fluid mt-4">
     <h1 class="mb-4">Manager Dashboard</h1>
 
+    <!-- Pending Recommendations Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Pending Recommendations</h2>
+            <div class="card">
+                <div class="card-body">
+                    {% if pending_recommendations %}
+                        <ul class="list-group">
+                        {% for recommendation in pending_recommendations %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">
+                                        {% if recommendation.status == 'Pending' and recommendation.id != recommendation.original_id %}
+                                            <span class="badge badge-warning">Regenerated</span>
+                                        {% endif %}
+                                        New Goal for Employee {{ recommendation.employee_id }}
+                                    </h5>
+                                    <p class="mb-1">{{ recommendation.new_goal }}</p>
+                                </div>
+                                <a href="{{ url_for('view_recommendation', recommendation_id=recommendation.id) }}" class="btn btn-primary btn-sm">Review</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No pending recommendations at this time.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Performance Overview Section -->
     <div class="row mb-4">
         <div class="col-12">
             <h2>Team Performance Overview</h2>
@@ -27,7 +59,7 @@
     <div class="row">
         <div class="col-md-12">
             <section class="mb-5">
-                <h2>Team Overview</h2>
+                <h2 class="mb-3">Team Overview</h2>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead class="thead-dark">

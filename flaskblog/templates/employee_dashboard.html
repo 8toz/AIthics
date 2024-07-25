@@ -5,8 +5,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
-
-
 {% endblock head %}
 
 {% block header_content %}
@@ -22,31 +20,20 @@
         <nav class="col-md-2 d-md-block bg-light sidebar">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
-                            Me
-                        </a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Me</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
-                            My team
-                        </a>
+                        <a class="nav-link" href="{{ url_for('home') }}">My team</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
-                            As reviewer
-                        </a>
+                        <a class="nav-link" href="{{ url_for('home') }}">As reviewer</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
-                            Feedback
-                        </a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Feedback</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
-                            Support
-                        </a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Support</a>
                     </li>
                 </ul>
             </div>
@@ -68,6 +55,29 @@
                     </div>
                 </div>
             </div>
+
+            <!-- New Learning Nudges Section -->
+            <section class="mb-5">
+                <h2 class="mb-3">Your Learning Nudges</h2>
+                <div class="card">
+                    <div class="card-body">
+                        {% if nudges %}
+                            <ul class="list-group">
+                            {% for nudge in nudges %}
+                                <li class="list-group-item">
+                                    <h5 class="mb-1">{{ nudge.new_goal }}</h5>
+                                    <p class="mb-1">{{ nudge.recommendation }}</p>
+                                    <small class="text-muted">Approved on: {{ nudge.timestamp }}</small>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No new learning nudges at this time.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
             <div class="image-container">
                 <img src="/static/donut_charts.png" class="img-fluid" alt="Image Description">
                 <p>Days Off Available</p>       <p>Weekly Working Hours</p>
@@ -98,24 +108,6 @@
                         <div class="swiper-button-prev"></div>
                         <div class="swiper-button-next"></div>
                     </div>
-                
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-                    <script>
-                        const swiper = new Swiper('.swiper', {
-                            slidesPerView: 3,
-                            spaceBetween: 5,
-                            loop: true,
-                            pagination: {
-                                el: '.swiper-pagination',
-                                clickable: true,
-                            },
-                            navigation: {
-                                nextEl: '.swiper-button-next',
-                                prevEl: '.swiper-button-prev',
-                            },
-                        });
-                    </script>
-                    <!-- Add more cards for other task categories as needed -->
                 </div>
             </section>
         </main>
@@ -143,20 +135,34 @@
         </div>
     </div>
 </div>
-
 {% endblock content %}
 
 {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 <script>
     $(document).ready(function() {
         console.log('Document ready');
-        
+
         $('#demoModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var size = button.data('size');
             var modal = $(this);
             modal.find('.modal-dialog').removeClass('modal-sm modal-lg modal-xl modal-xl-custom').addClass(size);
             console.log('Modal is about to be shown with size: ' + size);
+        });
+
+        const swiper = new Swiper('.swiper', {
+            slidesPerView: 3,
+            spaceBetween: 5,
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
         });
     });
 </script>

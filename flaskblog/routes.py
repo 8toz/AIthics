@@ -14,7 +14,7 @@ from flaskblog.forms import GoalPlanningForm
 
 from flaskblog import recomendation_employee
 
-
+CURRENT_USER_ROLE = None
 # This would ideally be stored in a database. For this example, we'll use a global variable.
 notifications = []
 
@@ -23,6 +23,68 @@ def get_db_connection():
     conn = sqlite3.connect('flaskblog.db')
     conn.row_factory = sqlite3.Row  # Access rows as dictionaries
     return conn
+
+
+def get_pending_recommendations():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM recommendations WHERE status = 'Pending' ORDER BY timestamp DESC")
+    recommendations = cursor.fetchall()
+    conn.close()
+    return recommendations
+
+
+def get_employee_nudges(employee_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM recommendations WHERE employee_id = ? AND status = 'Approved' ORDER BY timestamp DESC LIMIT 5", (employee_id,))
+    nudges = cursor.fetchall()
+    conn.close()
+    return nudges
+
+
+def
+
+@app.route('/view_recommendation/<int:recommendation_id>', methods=['GET', 'POST'])
+def view_recommendation(recommendation_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM recommendations WHERE id = ?", (recommendation_id,))
+    recommendation = cursor.fetchone()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'approve':
+            cursor.execute("UPDATE recommendations SET status = 'Approved' WHERE id = ?", (recommendation_id,))
+            flash('Recommendation approved successfully', 'success')
+        elif action == 'reject':
+            cursor.execute("UPDATE recommendations SET status = 'Rejected' WHERE id = ?", (recommendation_id,))
+            flash('Recommendation rejected. A new recommendation will be generated.', 'info')
+
+            # Regenerate recommendation
+            new_recommendation = recomendation_employee.handle_new_goal(
+                recommendation['employee_id'],
+                recommendation['new_goal'],
+                recommendation['current_performance_score'],
+                recommendation['current_project']
+            )
+
+            cursor.execute('''
+                INSERT INTO recommendations (employee_id, recommendation, current_project, current_performance_score, new_goal, status)
+                VALUES (?, ?, ?, ?, ?, 'Pending')
+            ''', (recommendation['employee_id'], new_recommendation, recommendation['current_project'],
+                  recommendation['current_performance_score'], recommendation['new_goal']))
+
+            new_recommendation_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            return redirect(url_for('view_recommendation', recommendation_id=new_recommendation_id))
+
+        conn.commit()
+        return redirect(url_for('manager_dashboard'))
+
+    conn.close()
+    return render_template('view_recommendation.html', recommendation=recommendation)
 
 # Close database connection when context is popped
 @app.teardown_appcontext
@@ -116,6 +178,8 @@ def manager_dashboard():
     cursor.close()
     conn.close()
 
+    pending_recommendations = get_pending_recommendations()
+
     return render_template('manager_dashboard.html',
                            title='Manager Dashboard',
                            employees=employees,
@@ -123,7 +187,8 @@ def manager_dashboard():
                            page=page,
                            total_pages=total_pages,
                            page_range=page_range,
-                           team_plots=team_plots)
+                           team_plots=team_plots,
+                           pending_recommendations=pending_recommendations)
 
 
 @app.route('/employee_dashboard')
@@ -159,13 +224,15 @@ def employee_dashboard():
         {"image": "https://via.placeholder.com/300x200?text=Slide+6", "title": "Slide 6",
          "description": "Description for Slide 6"},
     ]
-
-    return render_template('employee_dashboard.html'
-                           , title='Employee Dashboard'
-                           , employee=employee
-                           , recent_updates=recent_updates
-                           , upcoming_tasks=upcoming_tasks
-                         , slides=slides)
+    employee_id = 74430
+    nudges = get_employee_nudges(employee_id)
+    return render_template('employee_dashboard.html',
+                           title='Employee Dashboard',
+                           employee=employee,
+                           recent_updates=recent_updates,
+                           upcoming_tasks=upcoming_tasks,
+                           slides=slides,
+                           nudges=nudges)
 
 
 
@@ -363,10 +430,13 @@ def get_notifications():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+        global CURRENT_USER_ROLE
         if form.email.data == 'manager@infosys.com' and form.password.data == '1234':
+            CURRENT_USER_ROLE = 'manager'
             flash('Hi boss! How are you feeling today', 'success')
             return redirect(url_for('manager_dashboard'))
         elif form.email.data == 'employee@infosys.com' and form.password.data == '1234':
+            CURRENT_USER_ROLE = 'employee'
             return redirect(url_for('employee_dashboard'))
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
