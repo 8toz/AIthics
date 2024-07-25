@@ -13,7 +13,7 @@ An intelligent system designed to enhance operational efficiency in Human Resour
 ## Installation
 
 ### Prerequisites
-- Python 3.7 or higher
+- Python 3.10.7 or higher
 - pip (Python package manager)
 - ollama
 
@@ -35,7 +35,7 @@ An intelligent system designed to enhance operational efficiency in Human Resour
    ollama create model_name1 --file .\AIthics\Modelfiles\nudges.modelfile
    ollama create model_name2 --file .\AIthics\Modelfiles\insights.modelfile
    ```
-   Replace `model_name1` and `model_name2` with the appropriate model names for your project.
+   Replace `absolute_model_path_nudges` and `absolute_model_path_insights` with the appropriate model names for your project.
 
 ## Problem Statement
 
@@ -61,4 +61,4 @@ By leveraging artificial intelligence, our solution provides gentle nudges to bo
 
 ---
 
-For more information or support, please contact our team at support@ai-hr-solution.com.
+For more information or support, please contact our team at AIthics@infosys.bizhack.com.
