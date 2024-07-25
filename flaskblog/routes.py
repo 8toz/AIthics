@@ -270,7 +270,7 @@ def employee_dashboard():
     recommendations = get_old_recommendations(employee_id)
 
     # Generate nudges based on recommendations
-    generate_nudges(employee_id, recommendations)
+    # generate_nudges(employee_id, recommendations)
 
     # Fetch nudges for the employee
     nudges = get_nudges(employee_id)
