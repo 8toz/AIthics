@@ -5,18 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-CmNBa4XGQpHxFj+x22bVm/zIBOk1T5FzSWIlQxVUKdjZIsPpB62t0YbWmv/Rvz2zPdJv7G/+UBiMBNh4/tF7qw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>{% if title %}AICount App - {{ title }}{% else %}AICount App{% endif %}</title>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
             <div class="container-fluid">
-                {% block header_content %}
                 <a class="navbar-brand mr-4" href="/">AICount App</a>
-                <div class="navbar-nav ml-auto">
-                    <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Add notification icon -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-bell"></i> <!-- Font Awesome bell icon -->
+                            </a>
+                        </li>
+                        <!-- Example login link (modify as per your application) -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                    </ul>
                 </div>
-                {% endblock header_content %}
             </div>
         </nav>
     </header>

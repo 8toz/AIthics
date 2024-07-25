@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify, g
 import sqlite3
 from flaskblog import app
-from flaskblog.forms import RegistrationForm, LoginForm
+from flaskblog.forms import RegistrationForm, LoginForm, GoalPlanningForm
 from flaskblog.models import User, Post
 from datetime import datetime
 import pandas as pd
@@ -10,6 +10,10 @@ import plotly.graph_objects as go
 import io
 import base64
 from math import ceil
+from flaskblog.forms import GoalPlanningForm
+
+from flaskblog import recomendation_employee
+
 
 # This would ideally be stored in a database. For this example, we'll use a global variable.
 notifications = []
@@ -121,6 +125,7 @@ def manager_dashboard():
                            page_range=page_range,
                            team_plots=team_plots)
 
+
 @app.route('/employee_dashboard')
 def employee_dashboard():
     employee = {
@@ -131,7 +136,8 @@ def employee_dashboard():
         'status': 'Active'
     }
     recent_updates = [
-        {'author': 'HR Team', 'author_avatar': 'path_to_avatar.jpg', 'date_posted': '2024-07-24', 'content': 'Remember to submit your time sheets by Friday!'},
+        {'author': 'HR Team', 'author_avatar': 'path_to_avatar.jpg', 'date_posted': '2024-07-24',
+         'content': 'Remember to submit your time sheets by Friday!'},
         # Add more updates...
     ]
     upcoming_tasks = [
@@ -139,7 +145,29 @@ def employee_dashboard():
         {'description': 'Team meeting', 'due_date': '2024-07-26'},
         # Add more tasks...
     ]
-    return render_template('employee_dashboard.html', title='Employee Dashboard', employee=employee, recent_updates=recent_updates, upcoming_tasks=upcoming_tasks)
+    slides = [
+        {"image": "https://via.placeholder.com/300x200?text=Slide+1", "title": "Slide 1",
+         "description": "Description for Slide 1"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+2", "title": "Slide 2",
+         "description": "Description for Slide 2"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+3", "title": "Slide 3",
+         "description": "Description for Slide 3"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+4", "title": "Slide 4",
+         "description": "Description for Slide 4"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+5", "title": "Slide 5",
+         "description": "Description for Slide 5"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+6", "title": "Slide 6",
+         "description": "Description for Slide 6"},
+    ]
+
+    return render_template('employee_dashboard.html'
+                           , title='Employee Dashboard'
+                           , employee=employee
+                           , recent_updates=recent_updates
+                           , upcoming_tasks=upcoming_tasks
+                         , slides=slides)
+
+
 
 @app.route("/about")
 def about():
@@ -160,6 +188,63 @@ def tasks():
 @app.route("/performance")
 def performance():
     return render_template('performance.html', title='Performance')
+
+
+@app.route('/plan_goals', methods=['GET', 'POST'])
+def plan_goals():
+    form = GoalPlanningForm()
+
+    if request.method == 'GET':
+        conn = sqlite3.connect('flaskblog.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT project FROM projects WHERE employee_id = 74430')
+        projects_data = cursor.fetchall()
+        projects = [(project[0], project[0]) for project in projects_data]
+
+        form.select_project.choices = projects
+
+    if form.validate_on_submit():
+        goal_text = form.goal_text.data
+        selected_project = form.select_project.data
+        # lets remove the [ ] from the selected project
+        selected_project = selected_project[1:-1]
+
+        # Get employee performance score
+        employee_id = 74430  # Replace with actual employee ID
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT performance_score FROM employees WHERE employee_id = ?', (employee_id,))
+        result = cursor.fetchone()
+
+        if result is None:
+            flash(f'No performance score found for Employee ID {employee_id}', 'danger')
+            conn.close()
+            return redirect(url_for('plan_goals'))
+
+        performance_score = result[0]
+        print(performance_score)
+        conn.close()
+
+        # Generate recommendation
+        recommendation = recomendation_employee.handle_new_goal(employee_id, goal_text, performance_score, selected_project)
+        print(recommendation)
+        # Store recommendation
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO recommendations (employee_id, recommendation, current_project, current_performance_score, new_goal, timestamp, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (employee_id, recommendation,selected_project, performance_score, goal_text, datetime.now(), 'Pending'))
+
+        conn.commit()
+        conn.close()
+
+        flash('Goal set and recommendation generated successfully!', 'success')
+        return redirect(url_for('plan_goals'))
+
+    return render_template('plan_goals.html', title='Plan Goals', form=form)
+
+
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
