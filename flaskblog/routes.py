@@ -189,6 +189,66 @@ def tasks():
 def performance():
     return render_template('performance.html', title='Performance')
 
+@app.route("/notification")
+def notification():
+
+    return render_template('notification.html')
+
+@app.route("/home2")
+def home2():
+    return render_template('home2.html')
+
+@app.route("/login2", methods=['GET', 'POST'])
+def login2():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == 'manager@infosys.com' and form.password.data == '1234':
+            return redirect(url_for('manager_dashboard2'))
+        elif form.email.data == 'employee@infosys.com' and form.password.data == '1234':
+            return redirect(url_for('employee_dashboard2'))
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+    return render_template('login.html', title='Login', form=form)
+
+
+@app.route('/employee_dashboard2')
+def employee_dashboard2():
+    employee = {
+        'name': 'Jane Doe',
+        'position': 'Software Developer',
+        'department': 'IT',
+        'email': 'jane.doe@example.com',
+        'status': 'Active'
+    }
+    recent_updates = [
+        {'author': 'HR Team', 'author_avatar': 'path_to_avatar.jpg', 'date_posted': '2024-07-24', 'content': 'Remember to submit your time sheets by Friday!'},
+        # Add more updates...
+    ]
+    upcoming_tasks = [
+        {'description': 'Complete project proposal', 'due_date': '2024-07-30'},
+        {'description': 'Team meeting', 'due_date': '2024-07-26'},
+        # Add more tasks...
+    ]
+    slides = [
+        {"image": "https://via.placeholder.com/300x200?text=Slide+1", "title": "Slide 1", "description": "Description for Slide 1"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+2", "title": "Slide 2", "description": "Description for Slide 2"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+3", "title": "Slide 3", "description": "Description for Slide 3"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+4", "title": "Slide 4", "description": "Description for Slide 4"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+5", "title": "Slide 5", "description": "Description for Slide 5"},
+        {"image": "https://via.placeholder.com/300x200?text=Slide+6", "title": "Slide 6", "description": "Description for Slide 6"},
+    ]
+
+    return render_template('employee_dashboard2.html'
+                           , title='Employee Dashboard'
+                           , employee=employee
+                           , recent_updates=recent_updates
+                           , upcoming_tasks=upcoming_tasks
+                           , slides=slides)
+@app.route("/huss_goals")
+def huss_goals():
+
+    return render_template('huss_goals.html')
+
 
 @app.route('/plan_goals', methods=['GET', 'POST'])
 def plan_goals():
@@ -234,7 +294,7 @@ def plan_goals():
         cursor.execute('''
             INSERT INTO recommendations (employee_id, recommendation, current_project, current_performance_score, new_goal, timestamp, status)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (employee_id, recommendation,selected_project, performance_score, goal_text, datetime.now(), 'Pending'))
+        ''', (employee_id, recommendation,'project2', performance_score, goal_text, datetime.now(), 'Pending'))
 
         conn.commit()
         conn.close()

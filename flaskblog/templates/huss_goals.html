@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}Goal Plan{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <!-- Additional head content if needed -->
+    <style>
+        /* Additional styles specific to goal_plan.html */
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col">
+        <h1 class="mb-4">Employee Goal Plan</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Goal</th>
+                        <th>Weightage (%)</th>
+                        <th>Target (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data Science Projects</td>
+                        <td>70</td> <!-- Replace with actual dynamic data -->
+                        <td>90</td> <!-- Replace with actual dynamic data -->
+                    </tr>
+                    <tr>
+                        <td>Data Science Courses</td>
+                        <td>30</td> <!-- Replace with actual dynamic data -->
+                        <td>10</td> <!-- Replace with actual dynamic data -->
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th>100%</th> <!-- Ensure total adds up to 100% -->
+                        <th>100%</th> <!-- Ensure total adds up to 100% -->
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Approval buttons -->
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <a href="{{ url_for('home2') }}" class="btn btn-success mr-2">Approve</a>
+                <a href="{{ url_for('home2') }}" class="btn btn-danger">Reject</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <!-- Additional scripts if needed -->
+{% endblock %}

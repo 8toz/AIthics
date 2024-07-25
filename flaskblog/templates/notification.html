@@ -1,0 +1,94 @@
+{% extends "layout2.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1v1 Invitation</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS for styling -->
+    <style>
+        body {
+            padding: 50px;
+        }
+        .invite-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-reserve {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-reserve:hover {
+            background-color: #0056b3;
+        }
+        .location-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .location-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .location-link:hover {
+            text-decoration: underline;
+        }
+        .outlook-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .outlook-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .outlook-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="invite-container">
+        <h1 class="text-center mb-4">Invitation to 1v1</h1>
+        <div class="mb-3">
+            <p class="lead">You have been invited to a 1v1 session by your manager.</p>
+            <p class="text-center"><strong>Time:</strong> 02/08/2024 10:30</p>
+            <p class="text-center">
+                
+                <i class="fas fa-map-marker-alt location-icon"></i>
+                <a href="https://example.com/location" class="location-link" target="_blank">Building 1 Ground Floor</a>
+            </p>
+            <p class="text-center">
+                <i class="far fa-calendar-check outlook-icon"></i>
+                <a href="mailto:?subject=Confirmation of 1v1 Session&body=I confirm my attendance for the 1v1 session scheduled on 02/08/2024 at Building 1 Ground Floor." class="outlook-link">Click here to confirm via Outlook</a>
+            </p>
+        </div>
+        <form action="/reserve-calendar" method="POST">
+            <button type="submit" class="btn btn-reserve btn-block">Reserve in Calendar</button>
+        </form>
+    </div>
+
+    <!-- Font Awesome CDN for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+    <!-- Bootstrap JS (optional, for certain components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}
