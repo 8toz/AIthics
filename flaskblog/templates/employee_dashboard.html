@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 
 {% block head %}
-{{ super() }}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    {{ super() }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 {% endblock head %}
 
 {% block header_content %}
@@ -56,6 +57,28 @@
                 </div>
             </div>
 
+            <!-- New Recommendations Section -->
+            <section class="mb-5">
+                <h2 class="mb-3">Your Learning Recommendations</h2>
+                <div class="card">
+                    <div class="card-body">
+                        {% if recommendations %}
+                            <ul class="list-group">
+                                {% for recommendation in recommendations %}
+                                <li class="list-group-item">
+                                    <h5 class="mb-1">{{ recommendation.new_goal }}</h5>
+                                    <p class="mb-1">{{ recommendation.recommendation }}</p>
+                                    <small class="text-muted">Approved on: {{ recommendation.timestamp }}</small>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No new learning recommendations at this time.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
             <!-- New Learning Nudges Section -->
             <section class="mb-5">
                 <h2 class="mb-3">Your Learning Nudges</h2>
@@ -63,13 +86,13 @@
                     <div class="card-body">
                         {% if nudges %}
                             <ul class="list-group">
-                            {% for nudge in nudges %}
+                                {% for nudge in nudges %}
                                 <li class="list-group-item">
                                     <h5 class="mb-1">{{ nudge.new_goal }}</h5>
-                                    <p class="mb-1">{{ nudge.recommendation }}</p>
-                                    <small class="text-muted">Approved on: {{ nudge.timestamp }}</small>
+                                    <a class="mb-1">{{ nudge.nudge }}</a>
+
                                 </li>
-                            {% endfor %}
+                                {% endfor %}
                             </ul>
                         {% else %}
                             <p>No new learning nudges at this time.</p>
@@ -78,36 +101,44 @@
                 </div>
             </section>
 
-            <div class="image-container">
-                <img src="/static/donut_charts.png" class="img-fluid" alt="Image Description">
-                <p>Days Off Available</p>       <p>Weekly Working Hours</p>
-            </div>
-
+            <!-- Image and Text Section -->
             <section class="mb-5">
-                <h2 class="mb-3">My goal setting</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-text">Plan you goals before 27/07/2024 </p>
-                        <a href="{{ url_for('plan_goals') }}"  class="btn btn-primary">PlAnIfy goals</a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="/static/donut_charts.png" class="img-fluid" alt="Donut Charts">
+                    </div>
+                    <div class="col-md-6">
+                        <p>Days Off Available</p>
+                        <p>Weekly Working Hours</p>
                     </div>
                 </div>
             </section>
 
+            <!-- Goal Setting Section -->
+            <section class="mb-5">
+                <h2 class="mb-3">My goal setting</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">Plan your goals before 27/07/2024 </p>
+                        <a href="{{ url_for('plan_goals') }}"  class="btn btn-primary">Planify goals</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Task Progress Section -->
             <section class="mb-5">
                 <h2 class="mb-3">Task progress overview</h2>
-                <div class="row">
-                    <div class="swiper">
-                        <div class="swiper-wrapper">
-                            {% for slide in slides %}
-                            <div class="swiper-slide">
-                                <img src="{{ slide.image }}" alt="{{ slide.title }}">
-                            </div>
-                            {% endfor %}
+                <div class="swiper">
+                    <div class="swiper-wrapper">
+                        {% for slide in slides %}
+                        <div class="swiper-slide">
+                            <img src="{{ slide.image }}" alt="{{ slide.title }}">
                         </div>
-                        <div class="swiper-pagination"></div>
-                        <div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>
+                        {% endfor %}
                     </div>
+                    <div class="swiper-pagination"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
                 </div>
             </section>
         </main>
@@ -138,32 +169,30 @@
 {% endblock content %}
 
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-<script>
-    $(document).ready(function() {
-        console.log('Document ready');
+    <script>
+        $(document).ready(function() {
+            // Initialize Swiper
+            const swiper = new Swiper('.swiper', {
+                slidesPerView: 3,
+                spaceBetween: 5,
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
 
-        $('#demoModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var size = button.data('size');
-            var modal = $(this);
-            modal.find('.modal-dialog').removeClass('modal-sm modal-lg modal-xl modal-xl-custom').addClass(size);
-            console.log('Modal is about to be shown with size: ' + size);
+            // Modal size adjustment
+            $('#demoModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var size = button.data('size');
+                var modal = $(this);
+                modal.find('.modal-dialog').removeClass('modal-sm modal-lg modal-xl modal-xl-custom').addClass(size);
+            });
         });
-
-        const swiper = new Swiper('.swiper', {
-            slidesPerView: 3,
-            spaceBetween: 5,
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-        });
-    });
-</script>
+    </script>
 {% endblock scripts %}

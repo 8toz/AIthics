@@ -3,7 +3,7 @@ import sqlite3
 from flaskblog import app
 from flaskblog.forms import RegistrationForm, LoginForm, GoalPlanningForm
 from flaskblog.models import User, Post
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -13,6 +13,7 @@ from math import ceil
 from flaskblog.forms import GoalPlanningForm
 
 from flaskblog import recomendation_employee
+from ollama import Client
 
 CURRENT_USER_ROLE = None
 # This would ideally be stored in a database. For this example, we'll use a global variable.
@@ -20,7 +21,7 @@ notifications = []
 
 # Function to establish SQLite database connection
 def get_db_connection():
-    conn = sqlite3.connect('flaskblog.db')
+    conn = sqlite3.connect(r'C:\Users\hussin.TRN\Desktop\ai_for_infosys_hr\AIthics\flaskblog.db')
     conn.row_factory = sqlite3.Row  # Access rows as dictionaries
     return conn
 
@@ -34,7 +35,7 @@ def get_pending_recommendations():
     return recommendations
 
 
-def get_employee_nudges(employee_id):
+def get_employee_recommendations(employee_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM recommendations WHERE employee_id = ? AND status = 'Approved' ORDER BY timestamp DESC LIMIT 5", (employee_id,))
@@ -43,7 +44,7 @@ def get_employee_nudges(employee_id):
     return nudges
 
 
-def
+
 
 @app.route('/view_recommendation/<int:recommendation_id>', methods=['GET', 'POST'])
 def view_recommendation(recommendation_id):
@@ -93,7 +94,60 @@ def close_connection(exception=None):
     if conn is not None:
         conn.close()
 
+
+def get_old_recommendations(employee_id):
+    database = sqlite3.connect(r'C:\Users\hussin.TRN\Desktop\ai_for_infosys_hr\AIthics\flaskblog.db')
+    cursor = database.cursor()
+
+    # Calculate the date one month ago from today or older
+    one_month_ago = datetime.now() - timedelta(days=30)
+
+
+    # Query recommendations older than one month
+    cursor.execute('''
+        SELECT * FROM recommendations 
+        WHERE employee_id = ?
+    ''', (employee_id,))
+
+    old_recommendations = cursor.fetchall()
+    print(old_recommendations)
+    cursor.close()
+    database.close()
+
+    return old_recommendations
 # Function to generate team plots using Plotly
+
+# Function to generate nudges and store them in the database
+def generate_nudges(employee_id, recommendations):
+    client = Client(host='http://localhost:11434')
+
+    for recommendation in recommendations:
+        new_goal = recommendation[4]  # Assuming 'new_goal' is at index 4 in the recommendation tuple
+        prompt = f"Generate a nudge for employee {employee_id} on goal {new_goal}"
+
+        try:
+            response = client.generate(model='nudges_model:latest', prompt=prompt)
+            nudge = response['response']
+            print(f"Nudge generated for recommendation: {recommendation}. Nudge: {nudge}")
+            store_nudges(employee_id, nudge)  # Store nudge in the database
+        except Exception as e:
+            print(f"Error generating nudge for recommendation: {recommendation}. Error: {e}")
+
+
+# Function to store nudges in the database
+def store_nudges(employee_id, nudge):
+    database = sqlite3.connect(r'C:\Users\hussin.TRN\Desktop\ai_for_infosys_hr\AIthics\flaskblog.db')
+    cursor = database.cursor()
+    cursor.execute('''
+        INSERT INTO nudges (employee_id, nudge, time)
+        VALUES (?, ?, ?)
+    ''', (employee_id, nudge, datetime.now()))
+    database.commit()
+    print(f"Nudge stored for Employee ID {employee_id}")
+    cursor.close()
+    database.close()
+
+
 def generate_team_plots():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -191,8 +245,37 @@ def manager_dashboard():
                            pending_recommendations=pending_recommendations)
 
 
+
+
+def get_nudges(employee_id):
+    database = sqlite3.connect(r'C:\Users\hussin.TRN\Desktop\ai_for_infosys_hr\AIthics\flaskblog.db')
+    cursor = database.cursor()
+
+    # Fetch nudges for the specific employee
+    cursor.execute('''
+        SELECT * FROM nudges WHERE employee_id = ?
+    ''', (employee_id,))
+
+    nudges = cursor.fetchall()
+    cursor.close()
+    database.close()
+
+    return nudges
+
 @app.route('/employee_dashboard')
 def employee_dashboard():
+    employee_id = 74430  # Replace with actual employee ID retrieval logic
+
+    # Fetch recommendations (older than one month)
+    recommendations = get_old_recommendations(employee_id)
+
+    # Generate nudges based on recommendations
+    generate_nudges(employee_id, recommendations)
+
+    # Fetch nudges for the employee
+    nudges = get_nudges(employee_id)
+
+    # Example data for other sections
     employee = {
         'name': 'Jane Doe',
         'position': 'Software Developer',
@@ -202,37 +285,22 @@ def employee_dashboard():
     }
     recent_updates = [
         {'author': 'HR Team', 'author_avatar': 'path_to_avatar.jpg', 'date_posted': '2024-07-24',
-         'content': 'Remember to submit your time sheets by Friday!'},
-        # Add more updates...
-    ]
-    upcoming_tasks = [
-        {'description': 'Complete project proposal', 'due_date': '2024-07-30'},
-        {'description': 'Team meeting', 'due_date': '2024-07-26'},
-        # Add more tasks...
+         'title': 'New Policy Update', 'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+        # More recent updates as needed
     ]
     slides = [
-        {"image": "https://via.placeholder.com/300x200?text=Slide+1", "title": "Slide 1",
-         "description": "Description for Slide 1"},
-        {"image": "https://via.placeholder.com/300x200?text=Slide+2", "title": "Slide 2",
-         "description": "Description for Slide 2"},
-        {"image": "https://via.placeholder.com/300x200?text=Slide+3", "title": "Slide 3",
-         "description": "Description for Slide 3"},
-        {"image": "https://via.placeholder.com/300x200?text=Slide+4", "title": "Slide 4",
-         "description": "Description for Slide 4"},
-        {"image": "https://via.placeholder.com/300x200?text=Slide+5", "title": "Slide 5",
-         "description": "Description for Slide 5"},
-        {"image": "https://via.placeholder.com/300x200?text=Slide+6", "title": "Slide 6",
-         "description": "Description for Slide 6"},
+        {'image': '/static/slide1.jpg', 'title': 'Slide 1'},
+        {'image': '/static/slide2.jpg', 'title': 'Slide 2'},
+        # More slides as needed
     ]
-    employee_id = 74430
-    nudges = get_employee_nudges(employee_id)
+
     return render_template('employee_dashboard.html',
                            title='Employee Dashboard',
                            employee=employee,
+                           recommendations=recommendations,
+                           nudges=nudges,
                            recent_updates=recent_updates,
-                           upcoming_tasks=upcoming_tasks,
-                           slides=slides,
-                           nudges=nudges)
+                           slides=slides)
 
 
 
@@ -322,7 +390,7 @@ def plan_goals():
     form = GoalPlanningForm()
 
     if request.method == 'GET':
-        conn = sqlite3.connect('flaskblog.db')
+        conn = sqlite3.connect(r'C:\Users\hussin.TRN\Desktop\ai_for_infosys_hr\AIthics\flaskblog.db')
         cursor = conn.cursor()
         cursor.execute('SELECT project FROM projects WHERE employee_id = 74430')
         projects_data = cursor.fetchall()

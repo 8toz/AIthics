@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 # Initialize SQLite database
-conn = sqlite3.connect('flaskblog.db')
+conn = sqlite3.connect(r'C:\Users\hussin.TRN\Desktop\ai_for_infosys_hr\AIthics\flaskblog.db')
 # Create a cursor object using the connection
 cursor = conn.cursor()
 # Create a table 'employees' if it does not exist
@@ -150,7 +150,7 @@ cursor = conn.cursor()
 # cursor.close()
 # conn.close()
 cursor.execute("DROP TABLE IF EXISTS recommendations")
-
+conn.commit()
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS recommendations (
         id INTEGER PRIMARY KEY,
@@ -174,7 +174,7 @@ print("Table Created")
 cursor.execute('''
         INSERT INTO recommendations (employee_id, current_project, current_performance_score, new_goal, recommendation, timestamp, status)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (1, 'project1', 80, 'project2', 'Employee should work on project2', '2021-06-04 12:00:00', 'idk'))
+    ''', (74430, 'project1', 80, 'project2', 'Employee should work on project2', '2022-06-04 12:00:00', 'idk'))
 
 
 # Commit changes to the database
