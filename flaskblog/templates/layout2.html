@@ -33,30 +33,28 @@
                     </div>
                     
                     <div class="navbar-nav">
-                        {% if request.path not in ['/', '/login'] %}
+                        {% if request.path not in ['/', '/home2','/login'] %}
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-inbox"></i>
                             </a>
-                            {% if request.path in ['/manager_dashboard'] %}
+                            {% if request.path in ['/manager_dashboard2'] %}
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ url_for('huss_goals') }}">Review Employee Goals plan</a>
-                                <a class="dropdown-item" href="#">Plan 1 on 1 meeting</a>
+                                <a class="dropdown-item" href="#">Plan 1 on 1 meeting with Employee</a>
                                 <!-- <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Something else here</a> -->
                             </div>
                             {% endif %}
-                            {% if request.path in ['/employee_dashboard'] %}
+                            {% if request.path in ['/employee_dashboard2'] %}
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <!-- <a class="dropdown-item" href="{{ url_for('notification') }}">Notification</a> -->
-                                <a class="dropdown-item" href="{{ url_for('plan_goals') }}">Finish your goals!!</a>
+                                <a class="dropdown-item" href="{{ url_for('notification') }}">Notification</a>
                                 <!-- <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Something else here</a> -->
                             </div>
                             {% endif %}
                         </div>
                         {% endif %}
-                        <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                        <a class="nav-item nav-link" href="{{ url_for('login2') }}">Login</a>
                     </div>
                 </div>
             </div>

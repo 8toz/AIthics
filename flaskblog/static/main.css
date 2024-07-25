@@ -78,3 +78,34 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
+
+
+.swiper {
+  width: 580px;  /* Reduced from 600px to account for less spacing */
+  height: 200px;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+.swiper-slide img {
+  width: 180px;  /* Increased from 120px to fill more space */
+  height: 120px;  /* Increased from 80px to maintain aspect ratio */
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  --swiper-navigation-size: 20px;
+}
+
+.swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+}
