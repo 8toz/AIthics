@@ -80,7 +80,32 @@
 
             <div class="image-container">
                 <img src="/static/donut_charts.png" class="img-fluid" alt="Image Description">
-                <p>Days Off Available</p>       <p>Weekly Working Hours</p>
+                <style>
+                    .container {
+                      display: flex;
+                      flex-direction: row;
+                      width: 100%;
+                    }
+                    .left {
+                      flex: 1;
+                      text-align: right;
+                    }
+                    .right {
+                      flex: 3;
+                      text-align: left;
+                    }
+                  </style>
+                  </head>
+                  <body>
+                  
+                  <div class="container">
+                    <div class="left">
+                      Days Off Available
+                    </div>
+                    <div class="right">
+                      Weekly Working Hours
+                    </div>
+                  </div>
             </div>
 
             <section class="mb-5">
@@ -88,7 +113,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text">Plan you goals before 27/07/2024 </p>
-                        <a href="{{ url_for('plan_goals') }}"  class="btn btn-primary">PlAnIfy goals</a>
+                        <a href="{{ url_for('plan_goals') }}"  class="btn btn-primary">Planify Goals</a>
                     </div>
                 </div>
             </section>

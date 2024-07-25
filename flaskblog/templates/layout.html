@@ -56,7 +56,13 @@
                             {% endif %}
                         </div>
                         {% endif %}
+                        {% if request.path in ['/manager_dashboard', '/employee_dashboard'] %}
+                        <a class="nav-item nav-link" href="{{ url_for('home') }}">Logout</a>
+                        {% endif %}
+                        {% if request.path not in ['/manager_dashboard', '/employee_dashboard'] %}
                         <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>

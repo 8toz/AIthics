@@ -77,44 +77,11 @@
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text">Plan you goals before 27/07/2024 </p>
-                        <a href="{{ url_for('plan_goals') }}"  class="btn btn-primary">PlAnIfy goals</a>
+                        <a href="{{ url_for('plan_goals') }}"  class="btn btn-primary">Planify Goals</a>
                     </div>
                 </div>
             </section>
-
-            <section class="mb-5">
-                <h2 class="mb-3">Task progress overview</h2>
-                <div class="row">
-                    <div class="swiper">
-                        <div class="swiper-wrapper">
-                            {% for slide in slides %}
-                            <div class="swiper-slide">
-                                <img src="{{ slide.image }}" alt="{{ slide.title }}">
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="swiper-pagination"></div>
-                        <div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>
-                    </div>
                 
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-                    <script>
-                        const swiper = new Swiper('.swiper', {
-                            slidesPerView: 3,
-                            spaceBetween: 5,
-                            loop: true,
-                            pagination: {
-                                el: '.swiper-pagination',
-                                clickable: true,
-                            },
-                            navigation: {
-                                nextEl: '.swiper-button-next',
-                                prevEl: '.swiper-button-prev',
-                            },
-                        });
-                    </script>
-                    <!-- Add more cards for other task categories as needed -->
                 </div>
             </section>
         </main>
